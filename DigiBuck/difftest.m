@@ -1,0 +1,42 @@
+clear all;
+
+% Build time vector
+dt = 0.000001;
+t = 0:dt:1;
+
+% Build step input
+u = ones(size(t)); 
+u(1) = 0; 
+
+a1 = -1.001;
+a2 = 0.00075;
+
+b0 = 39.38;
+b1 = -77;   
+b2 = 37.64;
+
+% Initialize variables
+y0 = 0;
+y1 = 0; % Output 1 time step in the past
+y2 = 0; % Output 1 time step in the past
+x0 = 0; % Output 2 time steps in the past
+x1 = 0; % Input 1 time step in the past
+x2 = 0; % Input 2 time steps in the past
+
+% Step through time and solve the difference equation
+for i = 1:length(t)
+    %y(i) = 0.005025*x0 + 9.95e-5 * x1 - 0.004925 * x2 + 1.9899 * y1 - 0.9901 * y2;
+    y(i) =  (b0 * x0) + (b1 * x1) + (b2 * x2) - (a1 * y1) - (a2 * y2);
+    x2 = x1;
+    x1 = u(i); 
+    x0 = u(i);
+    
+    y2 = y1;
+    y1 = y(i);
+    
+    duty(i) = min(max((y(i)/3.3),0),100);
+end
+
+hold on;
+plot(t, duty);
+plot(t, u);
